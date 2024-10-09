@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart' show decodeImageFromList;
@@ -25,7 +26,15 @@ class SVGAParser {
   Future<MovieEntity> decodeFromAssets(String path) async {
     return decodeFromBuffer((await rootBundle.load(path)).buffer.asUint8List());
   }
-
+  Future<MovieEntity> decodeFromFile(String filePath) async {
+    final file = File(filePath);
+    if (await file.exists()) {
+      final bytes = await file.readAsBytes();
+      return decodeFromBuffer(bytes);
+    } else {
+      throw FileSystemException('File not found', filePath);
+    }
+  }
   /// Download animation file from buffer, and decode it.
   Future<MovieEntity> decodeFromBuffer(List<int> bytes) {
     TimelineTask? timeline;
